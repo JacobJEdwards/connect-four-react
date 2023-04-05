@@ -13,7 +13,12 @@ function Piece() {
 }
 
 function Board() {
-    const [grid, setGrid] = useState(new Array(42).fill('empty'));
+    const [grid, setGrid] = useState<any[]>(
+        new Array(7).fill(
+            new Array(6).fill(0)
+        )
+    );
+
     const [turn, setTurn] = useState<number>(1);
 
     function handleClick(index: number) {
