@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import './Board.css'
 
 
-function Piece(props: any) {
+
+function Piece({ colour }: { colour: string }) {
     return (
-        <span className={props.colour + ' piece'}></span>
+        <span className={colour + ' piece'}></span>
     )
 }
+
 function Board() {
     const [grid, setGrid] = useState<number[][]>(
         new Array(6).fill(
@@ -21,6 +23,8 @@ function Board() {
 
         const gridCopy = [...grid];
         const columnCopy = [...grid[index]].reverse();
+
+        if (!columnCopy.includes(0)) return;
 
         columnCopy.some((pieceNumber, index) => {
             if (pieceNumber === 0) {
