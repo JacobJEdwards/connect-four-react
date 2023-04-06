@@ -1,6 +1,24 @@
 .board {
 	display: grid;
 	background-color: darkblue;
-	gap: 10px;
+	gap: 20px 20px;
 	grid-template-columns: repeat(6, 1fr);
+	grid-template-rows: auto;
+}
+
+.piece {
+	background-color: black;
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
+	display: block;
+	padding: 9px;
+}
+
+.piece.red {
+	background-color: red;
+}
+
+.piece.green {
+	background-color: green;
 }
