@@ -3,9 +3,9 @@ import type { ReactElement } from 'react'
 import './App.css'
 import Board from './Board'
 
-function App (): ReactElement {
+function App(): ReactElement {
   return (
-    <div className="App">
+    <div className='App'>
       <Board />
     </div>
   )

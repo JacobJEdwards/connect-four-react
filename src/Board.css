@@ -1,24 +1,24 @@
 .board {
-	display: grid;
-	background-color: darkblue;
-	gap: 20px 20px;
-	grid-template-columns: repeat(6, 1fr);
-	grid-template-rows: auto;
+  display: grid;
+  background-color: darkblue;
+  gap: 20px 20px;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto;
 }
 
 .piece {
-	background-color: black;
-	width: 25px;
-	height: 25px;
-	border-radius: 50%;
-	display: block;
-	padding: 9px;
+  background-color: black;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: block;
+  padding: 9px;
 
-	&.red {
-		background-color: red;
-	}
+  &.red {
+    background-color: red;
+  }
 
-	&.green {
-		background-color: green;
-	}
+  &.green {
+    background-color: green;
+  }
 }
