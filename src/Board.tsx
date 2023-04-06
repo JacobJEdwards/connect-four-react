@@ -27,12 +27,29 @@ function Board (): ReactElement {
   // turn is a ref to a number, which is used to determine which player's turn it is. Set in the handle click function
   const turn = useRef<number>(1)
 
+  function checkWin (columnNum: number, piecePostion: number, player: TBoardPiece): boolean {
+    // get postion of last piece and check around it
+    const column = grid[columnNum]
+    const row = grid.map(column => column[piecePostion])
+    console.log(row)
+    // vertial check
+    if (column.filter(piece => piece === player).length >= 4) {
+      return true
+    }
+    // horizontal check
+    if (row.filter(piece => piece === player).length >= 4) {
+      return true
+    }
+    return false
+  }
+
   // handle click function -> takes an index, which is the column that was clicked. It then checks if the column is full, and if it isn't, it adds a piece to the bottom of the column
   function handleClick (index: number): boolean | undefined {
     const player: TBoardPiece = turn.current % 2 === 0 ? 1 : 2
 
     const gridCopy = [...grid]
     const columnCopy = [...grid[index]].reverse()
+    let piecePostion: number = -1
 
     if (!columnCopy.includes(0)) {
       alert('that column is filled!')
@@ -42,6 +59,7 @@ function Board (): ReactElement {
     columnCopy.some((pieceNumber, index) => {
       if (pieceNumber === 0) {
         columnCopy[index] = player
+        piecePostion = index
         return true
       }
       return false
@@ -49,6 +67,11 @@ function Board (): ReactElement {
 
     gridCopy[index] = columnCopy.reverse()
     setGrid(gridCopy)
+
+    if (checkWin(index, piecePostion, player)) {
+      alert(`Player ${player} wins!`)
+      return
+    }
     turn.current++
   }
 
@@ -56,15 +79,15 @@ function Board (): ReactElement {
   return (
         <div className='board'>
             {grid.map((column, index) => (
-                <div className='column' onClick={() => { handleClick(index) }}>
-                    {column.map(piece => (
+                <div className='column' onClick={() => { handleClick(index) }} key={index}>
+                    {column.map((piece, index) => (
                         <Piece colour={
                             piece === 0
                               ? 'black'
                               : piece === 1
                                 ? 'red'
                                 : 'green'
-                        } />
+                        } key={index} />
                     ))}
                 </div>
             ))}
