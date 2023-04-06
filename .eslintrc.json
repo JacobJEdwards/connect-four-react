@@ -11,5 +11,7 @@
     "project": ["tsconfig.json", "vite.config.ts"]
   },
   "plugins": ["react"],
-  "rules": {}
+  "rules": {
+    "space-before-function-paren": "off"
+  }
 }

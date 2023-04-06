@@ -9,12 +9,12 @@ interface TPieceProps {
 type TBoardPiece = 0 | 1 | 2
 
 // "Board Piece" component -> takes a colour prop and returns a span with that colour
-function Piece ({ colour }: TPieceProps): ReactElement {
+function Piece({ colour }: TPieceProps): ReactElement {
   return <span className={colour + ' piece'}></span>
 }
 
 // "Board" component -> returns a div with 6 columns, each with 7 pieces
-function Board (): ReactElement {
+function Board(): ReactElement {
   // grid is a 2D array of 6 columns, each with 7 pieces
   const [grid, setGrid] = useState<TBoardPiece[][]>(
     new Array(6).fill(new Array(7).fill(0))
@@ -23,7 +23,7 @@ function Board (): ReactElement {
   // turn is a ref to a number, which is used to determine which player's turn it is. Set in the handle click function
   const turn = useRef<number>(1)
 
-  function checkWin (
+  function checkWin(
     newGrid: TBoardPiece[][],
     columnNum: number,
     piecePostion: number,
@@ -31,21 +31,25 @@ function Board (): ReactElement {
   ): boolean {
     // get postion of last piece and check around it
     const column = newGrid[columnNum]
-    const row = newGrid.map((column) => column[piecePostion])
-    console.log(newGrid)
+
+    const row = newGrid.map(
+      (column) => column[column.length - piecePostion - 1]
+    )
     // vertial check
     if (column.filter((piece) => piece === player).length >= 4) {
       return true
     }
+
     // horizontal check
     if (row.filter((piece) => piece === player).length >= 4) {
       return true
     }
+
     return false
   }
 
   // handle click function -> takes an index, which is the column that was clicked. It then checks if the column is full, and if it isn't, it adds a piece to the bottom of the column
-  function handleClick (index: number): boolean | undefined {
+  function handleClick(index: number): boolean | undefined {
     const player: TBoardPiece = turn.current % 2 === 0 ? 1 : 2
 
     const gridCopy = [...grid]
@@ -70,7 +74,6 @@ function Board (): ReactElement {
     setGrid(gridCopy)
 
     turn.current++
-    console.log(turn.current)
 
     // have to pass the copy as function doesn't update state immediately
     if (checkWin(gridCopy, index, piecePostion, player)) {
