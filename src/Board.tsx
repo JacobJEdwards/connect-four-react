@@ -43,7 +43,7 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
     rowIndex: number,
     player: BoardPiece
   ): boolean => {
-    const checkLine = (line: number[]): boolean => {
+    const checkLine = (line: BoardPiece[]): boolean => {
       let count = 0
       for (let i = 0; i < line.length; i++) {
         if (line[i] === player) {
@@ -77,7 +77,7 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
       colStart--
     }
 
-    let diagonal = []
+    let diagonal: BoardPiece[] = []
     while (rowStart < numRows && colStart < numCols) {
       diagonal.push(newGrid[rowStart][colStart])
       rowStart++
