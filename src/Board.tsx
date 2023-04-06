@@ -1,30 +1,37 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import './Board.css'
 
+type TPieceProps = {
+    colour: string
+}
 
+type TBoardPiece = 0 | 1 | 2;
 
-function Piece({ colour }: { colour: string }) {
+function Piece({ colour }: TPieceProps) {
     return (
         <span className={colour + ' piece'}></span>
     )
 }
 
 function Board() {
-    const [grid, setGrid] = useState<number[][]>(
+    const [grid, setGrid] = useState<TBoardPiece[][]>(
         new Array(6).fill(
             new Array(7).fill(0)
         )
     );
 
-    const [turn, setTurn] = useState<number>(1);
+    const turn = useRef<number>(1)
 
     function handleClick(index: number) {
-        const player: number = turn % 2 === 0 ? 1 : 2;
+        const player: TBoardPiece = turn.current % 2 === 0 ? 1 : 2;
 
         const gridCopy = [...grid];
         const columnCopy = [...grid[index]].reverse();
 
-        if (!columnCopy.includes(0)) return;
+        if (!columnCopy.includes(0)) {
+            alert("that column is filled!")
+            return;
+        }
 
         columnCopy.some((pieceNumber, index) => {
             if (pieceNumber === 0) {
@@ -35,7 +42,7 @@ function Board() {
 
         gridCopy[index] = columnCopy.reverse();
         setGrid(gridCopy);
-        setTurn(turn + 1);
+        turn.current++;
     }
 
     return (

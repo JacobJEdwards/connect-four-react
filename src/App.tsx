@@ -7,9 +7,7 @@ import Board from './Board'
 function App() {
   return (
     <div className="App">
-      <div>
-        <Board />
-      </div>
+      <Board />
     </div>
   )
 }
