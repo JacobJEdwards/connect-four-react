@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react'
+import type { ReactElement } from 'react'
 import './App.css'
 import Board from './Board'
 
-function App() {
+function App (): ReactElement {
   return (
     <div className="App">
       <Board />
