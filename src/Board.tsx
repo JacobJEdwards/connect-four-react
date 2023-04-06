@@ -2,69 +2,106 @@ import React, { useState, useRef } from 'react'
 import type { ReactElement } from 'react'
 import './Board.css'
 
-interface TPieceProps {
-  colour: string
+// props for the "Board Piece" component
+// only accepts 3 colours
+type PieceColours = 'black' | 'red' | 'green'
+// type for the grid (ie a piece can be 0, 1 or 2)
+type BoardPiece = 0 | 1 | 2
+
+interface PieceProps {
+  colour: PieceColours
+}
+interface BoardProps {
+  numRows: number
+  numCols: number
+  reset?: () => void
 }
 
-type TBoardPiece = 0 | 1 | 2
-
 // "Board Piece" component -> takes a colour prop and returns a span with that colour
-function Piece({ colour }: TPieceProps): ReactElement {
-  return <span className={colour + ' piece'}></span>
+const Piece = ({ colour }: PieceProps): ReactElement => {
+  return <span className={`${colour} piece`}></span>
 }
 
 // "Board" component -> returns a div with 6 columns, each with 7 pieces
-function Board(): ReactElement {
+const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
   // grid is a 2D array of 6 columns, each with 7 pieces
-  const [grid, setGrid] = useState<TBoardPiece[][]>(
-    new Array(6).fill(new Array(7).fill(0))
+  const [grid, setGrid] = useState<BoardPiece[][]>(
+    Array.from({ length: numRows }, () => Array(numCols).fill(0))
   )
 
   // turn is a ref to a number, which is used to determine which player's turn it is. Set in the handle click function
-  const turn = useRef<number>(1)
+  const turn = useRef<number>(0)
 
-  function checkWin(
-    newGrid: TBoardPiece[][],
-    columnNum: number,
-    piecePostion: number,
-    player: TBoardPiece
-  ): boolean {
-    // get postion of last piece and check around it
-    const column: TBoardPiece[] = newGrid[columnNum]
+  const handleReset = (): void => {
+    setGrid(Array.from({ length: numRows }, () => Array(numCols).fill(0)))
+    turn.current = 0
+  }
 
-    const row: TBoardPiece[] = newGrid.map(
-      (column) => column[column.length - piecePostion - 1]
-    )
-    // vertial check
-    if (column.filter((piece) => piece === player).length >= 4) {
-      return true
-    }
-
-    // horizontal check
-    if (row.filter((piece) => piece === player).length >= 4) {
-      return true
-    }
-
-    // diagonal check
-    const diagonal: TBoardPiece[] = []
-    const diagonal2: TBoardPiece[] = []
-
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 7; j++) {
-        if (i - j === columnNum - piecePostion) {
-          diagonal.push(newGrid[i][j])
-        }
-        if (i + j === columnNum + piecePostion) {
-          diagonal2.push(newGrid[i][j])
+  const checkWin = (
+    newGrid: BoardPiece[][],
+    colIndex: number,
+    rowIndex: number,
+    player: BoardPiece
+  ): boolean => {
+    const checkLine = (line: number[]): boolean => {
+      let count = 0
+      for (let i = 0; i < line.length; i++) {
+        if (line[i] === player) {
+          count++
+          if (count === 4) {
+            return true
+          }
+        } else {
+          count = 0
         }
       }
+      return false
     }
 
-    if (diagonal.filter((piece) => piece === player).length >= 4) {
+    // check column
+    if (checkLine(newGrid[colIndex])) {
       return true
     }
 
-    if (diagonal2.filter((piece) => piece === player).length >= 4) {
+    // check row
+    const row = newGrid.map((column) => column[rowIndex])
+    if (checkLine(row)) {
+      return true
+    }
+
+    // check diagonal (top-left to bottom-right)
+    let rowStart = rowIndex
+    let colStart = colIndex
+    while (rowStart > 0 && colStart > 0) {
+      rowStart--
+      colStart--
+    }
+
+    let diagonal = []
+    while (rowStart < numRows && colStart < numCols) {
+      diagonal.push(newGrid[rowStart][colStart])
+      rowStart++
+      colStart++
+    }
+    if (checkLine(diagonal)) {
+      return true
+    }
+
+    // check diagonal (top-right to bottom-left)
+    rowStart = rowIndex
+    colStart = colIndex
+    while (rowStart > 0 && colStart < numCols - 1) {
+      rowStart--
+      colStart++
+    }
+
+    diagonal = []
+    while (rowStart < numRows && colStart >= 0) {
+      diagonal.push(newGrid[rowStart][colStart])
+      rowStart++
+      colStart--
+    }
+    if (checkLine(diagonal)) {
       return true
     }
 
@@ -72,36 +109,28 @@ function Board(): ReactElement {
   }
 
   // handle click function -> takes an index, which is the column that was clicked. It then checks if the column is full, and if it isn't, it adds a piece to the bottom of the column
-  function handleClick(index: number): boolean | undefined {
-    const player: TBoardPiece = turn.current % 2 === 0 ? 1 : 2
+  const handleClick = (colIndex: number): void => {
+    const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
 
-    const gridShallowCopy = [...grid]
-    const columnCopy = [...grid[index]].reverse()
-    let piecePostion: number = -1
+    const newGrid = grid.map((row) => [...row])
 
-    if (!columnCopy.includes(0)) {
-      alert('that column is filled!')
-      return
-    }
+    for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
+      if (newGrid[colIndex][rowIndex] === 0) {
+        newGrid[colIndex][rowIndex] = player
+        setGrid(newGrid)
+        turn.current++
 
-    columnCopy.some((pieceNumber, index) => {
-      if (pieceNumber === 0) {
-        columnCopy[index] = player
-        piecePostion = index
-        return true
+        if (checkWin(newGrid, colIndex, rowIndex, player)) {
+          setTimeout(() => {
+            alert(`Player ${player} wins!`)
+            handleReset()
+          }, 20)
+        }
+        return
       }
-      return false
-    })
-
-    gridShallowCopy[index] = columnCopy.reverse()
-    setGrid(gridShallowCopy)
-
-    turn.current++
-
-    // have to pass the copy as function doesn't update state immediately
-    if (checkWin(gridShallowCopy, index, piecePostion, player)) {
-      alert(`Player ${player} wins!`)
     }
+
+    alert('that column is filled!')
   }
 
   // returns a div with 6 columns, each with 7 pieces
