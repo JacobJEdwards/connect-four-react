@@ -13,12 +13,12 @@
 	border-radius: 50%;
 	display: block;
 	padding: 9px;
-}
 
-.piece.red {
-	background-color: red;
-}
+	&.red {
+		background-color: red;
+	}
 
-.piece.green {
-	background-color: green;
+	&.green {
+		background-color: green;
+	}
 }
