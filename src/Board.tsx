@@ -30,9 +30,9 @@ function Board(): ReactElement {
     player: TBoardPiece
   ): boolean {
     // get postion of last piece and check around it
-    const column = newGrid[columnNum]
+    const column: TBoardPiece[] = newGrid[columnNum]
 
-    const row = newGrid.map(
+    const row: TBoardPiece[] = newGrid.map(
       (column) => column[column.length - piecePostion - 1]
     )
     // vertial check
@@ -45,6 +45,29 @@ function Board(): ReactElement {
       return true
     }
 
+    // diagonal check
+    const diagonal: TBoardPiece[] = []
+    const diagonal2: TBoardPiece[] = []
+
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 7; j++) {
+        if (i - j === columnNum - piecePostion) {
+          diagonal.push(newGrid[i][j])
+        }
+        if (i + j === columnNum + piecePostion) {
+          diagonal2.push(newGrid[i][j])
+        }
+      }
+    }
+
+    if (diagonal.filter((piece) => piece === player).length >= 4) {
+      return true
+    }
+
+    if (diagonal2.filter((piece) => piece === player).length >= 4) {
+      return true
+    }
+
     return false
   }
 
@@ -52,7 +75,7 @@ function Board(): ReactElement {
   function handleClick(index: number): boolean | undefined {
     const player: TBoardPiece = turn.current % 2 === 0 ? 1 : 2
 
-    const gridCopy = [...grid]
+    const gridShallowCopy = [...grid]
     const columnCopy = [...grid[index]].reverse()
     let piecePostion: number = -1
 
@@ -70,13 +93,13 @@ function Board(): ReactElement {
       return false
     })
 
-    gridCopy[index] = columnCopy.reverse()
-    setGrid(gridCopy)
+    gridShallowCopy[index] = columnCopy.reverse()
+    setGrid(gridShallowCopy)
 
     turn.current++
 
     // have to pass the copy as function doesn't update state immediately
-    if (checkWin(gridCopy, index, piecePostion, player)) {
+    if (checkWin(gridShallowCopy, index, piecePostion, player)) {
       alert(`Player ${player} wins!`)
     }
   }
