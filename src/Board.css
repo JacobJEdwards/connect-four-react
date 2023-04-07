@@ -1,18 +1,18 @@
 .board {
   display: grid;
   background-color: darkblue;
-  gap: 20px 20px;
+  gap: 1rem;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: auto;
 }
 
 .piece {
   background-color: black;
-  width: 25px;
-  height: 25px;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   display: block;
-  padding: 9px;
+  padding: 0.5rem;
 
   &.red {
     background-color: red;
@@ -24,6 +24,11 @@
 }
 
 .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   &:hover {
     background-color: blue;
   }

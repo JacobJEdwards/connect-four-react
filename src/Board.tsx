@@ -19,6 +19,7 @@ interface BoardProps {
 
 interface ColumnProps {
   column: BoardPiece[]
+  won: boolean
   onClick: () => void
 }
 
@@ -29,10 +30,12 @@ const Piece = memo(({ colour }: PieceProps): ReactElement => {
 
 Piece.displayName = 'Piece'
 
-const Column = memo(({ column, onClick }: ColumnProps): ReactElement => {
+const Column = memo(({ column, onClick, won }: ColumnProps): ReactElement => {
   return (
     <div
-      className={`column ${column.every((piece) => piece !== 0) ? 'full' : ''}`}
+      className={`column ${
+        column.every((piece) => piece !== 0) || won ? 'full' : ''
+      }`}
       onClick={onClick}>
       {column.map((piece, index) => (
         <Piece
@@ -55,10 +58,12 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
 
   // turn is a ref to a number, which is used to determine which player's turn it is. Set in the handle click function
   const turn = useRef<number>(0)
+  const [gameWon, setGameWon] = useState<boolean>(false)
 
   const handleReset = (): void => {
     setGrid(Array.from({ length: numRows }, () => Array(numCols).fill(0)))
     turn.current = 0
+    setGameWon(false)
   }
 
   const checkWin = (
@@ -133,46 +138,58 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
   }
 
   // handle click function -> takes an index, which is the column that was clicked. It then checks if the column is full, and if it isn't, it adds a piece to the bottom of the column
-  const handleClick = useCallback(
-    (colIndex: number): void => {
-      const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
+  const handleClick = (colIndex: number): void => {
+    if (gameWon) {
+      return
+    }
+    const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
 
-      const newGrid = grid.map((row) => [...row])
+    const newGrid = grid.map((row) => [...row])
 
-      for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
-        if (newGrid[colIndex][rowIndex] === 0) {
-          newGrid[colIndex][rowIndex] = player
-          setGrid(newGrid)
-          turn.current++
+    for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
+      if (newGrid[colIndex][rowIndex] === 0) {
+        newGrid[colIndex][rowIndex] = player
+        setGrid(newGrid)
+        turn.current++
 
-          if (checkWin(newGrid, colIndex, rowIndex, player)) {
-            setTimeout(() => {
-              alert(`Player ${player} wins!`)
-              handleReset()
-            }, 20)
-          }
-          return
+        if (checkWin(newGrid, colIndex, rowIndex, player)) {
+          setTimeout(() => {
+            setGameWon(true)
+          }, 20)
         }
+        return
       }
+    }
 
-      alert('that column is filled!')
-    },
-    [grid]
-  )
+    alert('that column is filled!')
+  }
 
   // returns a div with 6 columns, each with 7 pieces
   return (
-    <div className='board'>
-      {grid.map((column, index) => (
-        <Column
-          column={column}
-          onClick={() => {
-            handleClick(index)
-          }}
-          key={index}
-        />
-      ))}
-    </div>
+    <section>
+      <div className='board'>
+        {grid.map((column, index) => (
+          <Column
+            column={column}
+            onClick={() => {
+              handleClick(index)
+            }}
+            key={index}
+            won={gameWon}
+          />
+        ))}
+      </div>
+      {gameWon && (
+        <div className='game-won'>
+          <h1>Player {turn.current % 2 === 0 ? 2 : 1} Won!</h1>
+        </div>
+      )}
+      <button
+        className='reset'
+        onClick={handleReset}>
+        Reset
+      </button>
+    </section>
   )
 }
 
