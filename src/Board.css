@@ -31,10 +31,12 @@
 
   &:hover {
     background-color: blue;
+    cursor: pointer;
   }
   &.full {
     &:hover {
       background-color: darkblue;
+      cursor: unset;
     }
   }
 }
