@@ -1,5 +1,5 @@
 import React, { useState, useRef, memo } from 'react'
-import type { ReactElement } from 'react'
+import type { FC } from 'react'
 import './Board.css'
 
 // props for the "Board Piece" component
@@ -10,11 +10,11 @@ type BoardPiece = 0 | 1 | 2
 
 interface PieceProps {
   colour: PieceColours
+  className?: string
 }
 interface BoardProps {
   numRows: number
   numCols: number
-  reset?: () => void
 }
 
 interface ColumnProps {
@@ -24,33 +24,33 @@ interface ColumnProps {
 }
 
 // "Board Piece" component -> takes a colour prop and returns a span with that colour
-const Piece = memo(({ colour }: PieceProps): ReactElement => {
+const Piece: FC<PieceProps> = memo(({ colour }: PieceProps) => {
   return <span className={`${colour} piece`}></span>
 })
 
 Piece.displayName = 'Piece'
 
-const Column = memo(({ column, onClick, won }: ColumnProps): ReactElement => {
-  return (
-    <div
-      className={`column ${
-        column.every((piece) => piece !== 0) || won ? 'full' : ''
-      }`}
-      onClick={onClick}>
-      {column.map((piece, index) => (
-        <Piece
-          colour={piece === 0 ? 'black' : piece === 1 ? 'red' : 'green'}
-          key={index}
-        />
-      ))}
-    </div>
-  )
-})
+const Column: FC<ColumnProps> = memo(
+  ({ column, onClick, won }: ColumnProps) => {
+    return (
+      <div
+        className={`column ${!column.includes(0) || won ? 'full' : ''}`}
+        onClick={onClick}>
+        {column.map((piece, index) => (
+          <Piece
+            colour={piece === 0 ? 'black' : piece === 1 ? 'red' : 'green'}
+            key={index}
+          />
+        ))}
+      </div>
+    )
+  }
+)
 
 Column.displayName = 'Column'
 
 // "Board" component -> returns a div with 6 columns, each with 7 pieces
-const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
+const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
   // grid is a 2D array of 6 columns, each with 7 pieces
   const [grid, setGrid] = useState<BoardPiece[][]>(
     Array.from({ length: numRows }, () => Array(numCols).fill(0))
@@ -142,6 +142,7 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
     if (gameWon) {
       return
     }
+
     const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
 
     const newGrid = grid.map((row) => [...row])
@@ -160,14 +161,14 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
         return
       }
     }
-
-    alert('that column is filled!')
   }
 
   // returns a div with 6 columns, each with 7 pieces
   return (
     <section>
-      <h1>Connect Four</h1>
+      <header>
+        <h1>Connect Four</h1>
+      </header>
       <div className='board'>
         {grid.map((column, index) => (
           <Column
