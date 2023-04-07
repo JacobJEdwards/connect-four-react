@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo, useCallback } from 'react'
+import React, { useState, useRef, memo } from 'react'
 import type { ReactElement } from 'react'
 import './Board.css'
 
@@ -167,6 +167,7 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
   // returns a div with 6 columns, each with 7 pieces
   return (
     <section>
+      <h1>Connect Four</h1>
       <div className='board'>
         {grid.map((column, index) => (
           <Column
