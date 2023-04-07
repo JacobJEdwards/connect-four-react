@@ -22,3 +22,14 @@
     background-color: green;
   }
 }
+
+.column {
+  &:hover {
+    background-color: blue;
+  }
+  &.full {
+    &:hover {
+      background-color: darkblue;
+    }
+  }
+}

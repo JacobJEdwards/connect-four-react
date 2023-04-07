@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, memo, useCallback } from 'react'
 import type { ReactElement } from 'react'
 import './Board.css'
 
@@ -17,10 +17,34 @@ interface BoardProps {
   reset?: () => void
 }
 
-// "Board Piece" component -> takes a colour prop and returns a span with that colour
-const Piece = ({ colour }: PieceProps): ReactElement => {
-  return <span className={`${colour} piece`}></span>
+interface ColumnProps {
+  column: BoardPiece[]
+  onClick: () => void
 }
+
+// "Board Piece" component -> takes a colour prop and returns a span with that colour
+const Piece = memo(({ colour }: PieceProps): ReactElement => {
+  return <span className={`${colour} piece`}></span>
+})
+
+Piece.displayName = 'Piece'
+
+const Column = memo(({ column, onClick }: ColumnProps): ReactElement => {
+  return (
+    <div
+      className={`column ${column.every((piece) => piece !== 0) ? 'full' : ''}`}
+      onClick={onClick}>
+      {column.map((piece, index) => (
+        <Piece
+          colour={piece === 0 ? 'black' : piece === 1 ? 'red' : 'green'}
+          key={index}
+        />
+      ))}
+    </div>
+  )
+})
+
+Column.displayName = 'Column'
 
 // "Board" component -> returns a div with 6 columns, each with 7 pieces
 const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
@@ -109,47 +133,44 @@ const Board = ({ numRows = 6, numCols = 7 }: BoardProps): ReactElement => {
   }
 
   // handle click function -> takes an index, which is the column that was clicked. It then checks if the column is full, and if it isn't, it adds a piece to the bottom of the column
-  const handleClick = (colIndex: number): void => {
-    const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
+  const handleClick = useCallback(
+    (colIndex: number): void => {
+      const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
 
-    const newGrid = grid.map((row) => [...row])
+      const newGrid = grid.map((row) => [...row])
 
-    for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
-      if (newGrid[colIndex][rowIndex] === 0) {
-        newGrid[colIndex][rowIndex] = player
-        setGrid(newGrid)
-        turn.current++
+      for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
+        if (newGrid[colIndex][rowIndex] === 0) {
+          newGrid[colIndex][rowIndex] = player
+          setGrid(newGrid)
+          turn.current++
 
-        if (checkWin(newGrid, colIndex, rowIndex, player)) {
-          setTimeout(() => {
-            alert(`Player ${player} wins!`)
-            handleReset()
-          }, 20)
+          if (checkWin(newGrid, colIndex, rowIndex, player)) {
+            setTimeout(() => {
+              alert(`Player ${player} wins!`)
+              handleReset()
+            }, 20)
+          }
+          return
         }
-        return
       }
-    }
 
-    alert('that column is filled!')
-  }
+      alert('that column is filled!')
+    },
+    [grid]
+  )
 
   // returns a div with 6 columns, each with 7 pieces
   return (
     <div className='board'>
       {grid.map((column, index) => (
-        <div
-          className='column'
+        <Column
+          column={column}
           onClick={() => {
             handleClick(index)
           }}
-          key={index}>
-          {column.map((piece, index) => (
-            <Piece
-              colour={piece === 0 ? 'black' : piece === 1 ? 'red' : 'green'}
-              key={index}
-            />
-          ))}
-        </div>
+          key={index}
+        />
       ))}
     </div>
   )
