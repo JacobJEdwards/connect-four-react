@@ -2,12 +2,16 @@ import React, { useState, useRef, memo } from 'react'
 import type { FC } from 'react'
 import './Board.css'
 
+const WINNING_PIECES = 4
+
 // props for the "Board Piece" component
 // only accepts 3 colours
 type PieceColours = 'black' | 'red' | 'green'
+
 // type for the grid (ie a piece can be 0, 1 or 2)
 type BoardPiece = 0 | 1 | 2
 
+// prop types
 interface PieceProps {
   colour: PieceColours
   className?: string
@@ -77,7 +81,7 @@ const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
       for (let i = 0; i < line.length; i++) {
         if (line[i] === player) {
           count++
-          if (count === 4) {
+          if (count === WINNING_PIECES) {
             return true
           }
         } else {
