@@ -2,11 +2,12 @@
 import React, { useState, useRef, memo } from 'react'
 import type { FC } from 'react'
 import { PieceColours } from './utility/types'
-import type {
-  PieceProps,
-  ColumnProps,
-  BoardProps,
-  BoardPiece,
+import {
+  type PieceProps,
+  type ColumnProps,
+  type BoardProps,
+  type BoardPiece,
+  BoardPieces,
 } from './utility/types'
 import checkWin from './utility/connect2-win-check'
 import './Board.css'
@@ -27,9 +28,9 @@ const Column: FC<ColumnProps> = memo(
         {column.map((piece, index) => (
           <Piece
             colour={
-              piece === 0
+              piece === BoardPieces.EMPTY
                 ? PieceColours.BLACK
-                : piece === 1
+                : piece === BoardPieces.PLAYER1
                 ? PieceColours.RED
                 : PieceColours.GREEN
             }
@@ -55,7 +56,11 @@ const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
   const [gameWon, setGameWon] = useState<boolean>(false)
 
   const handleReset = (): void => {
-    setGrid(Array.from({ length: numRows }, () => Array(numCols).fill(0)))
+    setGrid(
+      Array.from({ length: numRows }, () =>
+        Array(numCols).fill(BoardPieces.EMPTY)
+      )
+    )
     turn.current = 0
     setGameWon(false)
   }
@@ -66,17 +71,18 @@ const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
       return
     }
 
-    const player: BoardPiece = turn.current % 2 === 0 ? 1 : 2
+    const playerPiece: BoardPiece =
+      turn.current % 2 === 0 ? BoardPieces.PLAYER1 : BoardPieces.PLAYER2
 
     const newGrid = grid.map((row) => [...row])
 
     for (let rowIndex = numRows; rowIndex >= 0; rowIndex--) {
-      if (newGrid[colIndex][rowIndex] === 0) {
-        newGrid[colIndex][rowIndex] = player
+      if (newGrid[colIndex][rowIndex] === BoardPieces.EMPTY) {
+        newGrid[colIndex][rowIndex] = playerPiece
         setGrid(newGrid)
         turn.current++
 
-        if (checkWin(newGrid, player)) {
+        if (checkWin(newGrid, playerPiece)) {
           setTimeout(() => {
             setGameWon(true)
           }, 20)
@@ -106,7 +112,11 @@ const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
       </div>
       {gameWon && (
         <div className='game-won'>
-          <h1>Player {turn.current % 2 === 0 ? 2 : 1} Won!</h1>
+          <h1>
+            Player{' '}
+            {turn.current % 2 === 0 ? BoardPieces.PLAYER2 : BoardPieces.PLAYER2}{' '}
+            Won!
+          </h1>
         </div>
       )}
       <button

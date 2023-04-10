@@ -8,14 +8,20 @@ export declare const PieceColours = {
   readonly GREEN: 'green'
 }
 
-export declare type PieceColoursType = typeof PieceColours[keyof typeof PieceColours]
+export declare type PieceColour = typeof PieceColours[keyof typeof PieceColours]
 
 // type for the grid (ie a piece can be 0, 1 or 2)
-export declare type BoardPiece = 0 | 1 | 2
+export declare const BoardPieces = {
+  readonly EMPTY: 0,
+  readonly PLAYER1: 1,
+  readonly PLAYER2: 2
+}
+
+export declare type BoardPiece = typeof BoardPieces[keyof typeof BoardPieces]
 
 // prop types
 export interface PieceProps {
-  colour: PieceColoursType
+  colour: PieceColour
   className?: string
 }
 export interface BoardProps {
