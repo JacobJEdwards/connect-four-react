@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/comma-dangle */
 import React, { useState, useRef, memo } from 'react'
 import type { FC } from 'react'
+import { PieceColours } from './utility/types'
 import type {
   PieceProps,
   ColumnProps,
@@ -25,7 +26,13 @@ const Column: FC<ColumnProps> = memo(
         onClick={onClick}>
         {column.map((piece, index) => (
           <Piece
-            colour={piece === 0 ? 'black' : piece === 1 ? 'red' : 'green'}
+            colour={
+              piece === 0
+                ? PieceColours.BLACK
+                : piece === 1
+                ? PieceColours.RED
+                : PieceColours.GREEN
+            }
             key={index}
           />
         ))}
