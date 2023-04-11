@@ -1,48 +1,12 @@
 /* eslint-disable @typescript-eslint/comma-dangle */
-import React, { useState, useRef, memo } from 'react'
+import React, { useState, useRef } from 'react'
 import type { FC } from 'react'
-import { PieceColours } from './utility/types'
-import {
-  type PieceProps,
-  type ColumnProps,
-  type BoardProps,
-  type BoardPiece,
-  BoardPieces,
-} from './utility/types'
+import Column from './Column'
+import { type BoardProps, type BoardPiece, BoardPieces } from './utility/types'
 import checkWin from './utility/connect2-win-check'
 import './Board.css'
 
 // "Board Piece" component -> takes a colour prop and returns a span with that colour
-const Piece: FC<PieceProps> = memo(({ colour }: PieceProps) => {
-  return <span className={`${colour} piece`}></span>
-})
-
-Piece.displayName = 'Piece'
-
-const Column: FC<ColumnProps> = memo(
-  ({ column, onClick, won }: ColumnProps) => {
-    return (
-      <div
-        className={`column ${!column.includes(0) || won ? 'full' : ''}`}
-        onClick={onClick}>
-        {column.map((piece, index) => (
-          <Piece
-            colour={
-              piece === BoardPieces.EMPTY
-                ? PieceColours.BLACK
-                : piece === BoardPieces.PLAYER1
-                ? PieceColours.RED
-                : PieceColours.GREEN
-            }
-            key={index}
-          />
-        ))}
-      </div>
-    )
-  }
-)
-
-Column.displayName = 'Column'
 
 // "Board" component -> returns a div with 6 columns, each with 7 pieces
 const Board: FC<BoardProps> = ({ numRows = 6, numCols = 7 }: BoardProps) => {
