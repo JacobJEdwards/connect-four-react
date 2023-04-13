@@ -1,9 +1,12 @@
 {
 	"name": "connect-four-react",
-	"private": true,
+    "homepage": "https://jacobjedwards.github.io/connect-four-react/",
+	"private": false,
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d dist",
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
@@ -25,13 +28,15 @@
 		"eslint-plugin-n": "^15.7.0",
 		"eslint-plugin-promise": "^6.1.1",
 		"eslint-plugin-react": "^7.32.2",
+		"gh-pages": "^5.0.0",
 		"postcss": "^8.4.21",
 		"postcss-nested": "^6.0.1",
 		"postcss-simple-vars": "^7.0.1",
 		"stylelint": "^15.4.0",
 		"stylelint-config-standard": "^32.0.0",
 		"typescript": "^4.9.5",
-		"vite": "^4.2.0"
+		"vite": "^4.2.0",
+		"vite-plugin-gh-pages": "^0.4.1"
 	},
 	"browserslist": [
 		"defaults"
